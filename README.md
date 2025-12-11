@@ -1,0 +1,22 @@
+## Content Writing Assistant
+
+Backend: Flask + Gemini. Frontend: static HTML/JS.
+
+### Local dev
+- Install Python 3.11+
+- `pip install -r backend/requirements.txt`
+- Add `.env` in `backend/` with `GEMINI_API_KEY=<your-key>` and optional `FLASK_DEBUG=True`
+- Run `python backend/main.py`
+- Open `frontend/index.html` in a browser
+
+### Render deploy
+- Uses `render.yaml` blueprint:
+  - Backend: Python web service, builds with `pip install -r backend/requirements.txt`, starts `cd backend && gunicorn -b 0.0.0.0:$PORT main:app`, health `GET /health`.
+  - Env vars: `GEMINI_API_KEY` (required, not synced), `FLASK_DEBUG=False`.
+- Deploy from repo:
+  1) Connect repo in Render, choose "Blueprint" and point to `render.yaml`.
+  2) Set `GEMINI_API_KEY` env var on the backend service.
+- Frontend hosting:
+  - If you also create a Render Static Site, set build command: `echo "window.API_BASE_URL='$BACKEND_URL/api';" > env.js` and publish path: `frontend`. (Replace `$BACKEND_URL` with your backend URL.)
+  - `index.html` loads optional `env.js`; if not present it falls back to same-origin or `http://localhost:5000/api` for local dev.
+  - You can also serve the frontend locally via `python -m http.server` inside `frontend/`.
